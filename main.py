@@ -95,3 +95,68 @@ L = [['.....',
       '..0..',
       '..0..',
       '.....']]
+
+T = [['.....',
+     '..0..',
+     '.000.',
+     '.....',
+     '.....'],
+    ['.....',
+     '..0..',
+     '..00.',
+     '..0..',
+     '.....'],
+    ['.....',
+     '.....',
+     '.000.',
+     '..0..',
+     '.....'],
+    ['.....',
+     '..0..',
+     '.00..',
+     '..0..',
+     '.....']]
+
+
+shapes = [S, Z, I, O, J, L, T]
+shape_colors = [(0, 255, 0), (255, 0, 0), (0, 255, 255), (255, 255, 0), (255, 165, 0), (0, 0, 255), (128, 0, 128)]
+
+
+class Piece:
+   def __init__(self, x, y, shape):
+       self.x = x
+       self.y = y
+       self.shape = shape
+       self.color = shape_colors[shapes.index(shape)]
+       self.rotation = 0
+
+
+def create_grid(locked_positions={}):
+   grid = [[(0,0,0) for _ in range(10)] for _ in range(20)]
+
+
+   for i in range(len(grid)):
+       for j in range(len(grid[i])):
+           if (j,i) in locked_positions:
+               c = locked_positions[(j,i)]
+               grid[i][j] = c
+   return grid
+
+
+def convert_shape_format(shape):
+   positions = []
+   format = shape.shape[shape.rotation % len(shape.shape)]
+
+
+   for i, line in enumerate(format):
+       row = list(line)
+       for j, column in enumerate(row):
+           if column == '0':
+               positions.append((shape.x + j, shape.y + i))
+
+
+   for i, pos in enumerate(positions):
+       positions[i] = (pos[0] - 2, pos[1] - 4)
+   return positions
+
+
