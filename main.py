@@ -160,3 +160,74 @@ def convert_shape_format(shape):
    return positions
 
 
+def valid_space(shape, grid):
+   accepted_positions = [[(j, i) for j in range(10) if grid[i][j] == (0,0,0)] for i in range(20)]
+   accepted_positions = [j for sub in accepted_positions for j in sub]
+
+
+   formatted = convert_shape_format(shape)
+
+
+   for pos in formatted:
+       if pos not in accepted_positions:
+           if pos[1] > -1:
+               return False
+   return True
+
+
+def check_lost(positions):
+   for pos in positions:
+       x, y = pos
+       if y < 1:
+           return True
+   return False
+
+
+def get_shape():
+   return Piece(5, 0, random.choice(shapes))
+
+
+def draw_text_middle(text, size, color, surface):
+   font = pygame.font.Font(pygame.font.get_default_font(), size)
+   label = font.render(text, 1, color)
+
+
+   surface.blit(label, (top_left_x + play_width/2 - (label.get_width() / 2), top_left_y + play_height/2 - (label.get_height()/2)))
+
+
+def draw_grid(surface, grid):
+   sx = top_left_x
+   sy = top_left_y
+
+
+   for i in range(len(grid)):
+       pygame.draw.line(surface, (128,128,128), (sx, sy + i*block_size), (sx + play_width, sy + i * block_size))
+       for j in range(len(grid[i])):
+           pygame.draw.line(surface, (128,128,128), (sx + j*block_size, sy), (sx + j*block_size, sy + play_height))
+
+
+def clear_rows(grid, locked):
+   inc = 0
+   for i in range(len(grid)-1, -1, -1):
+       row = grid[i]
+       if (0,0,0) not in row:
+           inc += 1
+           ind = i
+           for j in range(len(row)):
+               try:
+                   del locked[(j, i)]
+               except:
+                   continue
+
+
+   if inc > 0:
+       for key in sorted(list(locked), key=lambda x: x[1])[::-1]:
+           x, y = key
+           if y < ind:
+               newKey = (x, y + inc)
+               locked[newKey] = locked.pop(key)
+
+
+   return inc
+
+
